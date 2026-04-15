@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f0f0f;
+      color: #f0f0f0;
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+      padding: 8vw 10vw;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4rem;
+      opacity: 0.9;
+    }
+
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    a {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      padding: 1.5rem 2rem;
+      border: 1px solid #222;
+      border-radius: 6px;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    a:hover, a:focus {
+      border-color: #444;
+      background: #161616;
+      outline: none;
+    }
+
+    .talk-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .talk-desc {
+      font-size: 1rem;
+      font-weight: 300;
+      opacity: 0.45;
+      margin-top: 0.3rem;
+    }
+
+    .error {
+      font-weight: 300;
+      color: #555;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .error code {
+      background: #1a1a1a;
+      padding: 0.2em 0.6em;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Talks</h1>
+<ul id="list"></ul>
+
+<script>
+  fetch('talks.json')
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(talks => {
+      const list = document.getElementById('list');
+      if (!talks.length) {
+        list.innerHTML = '<p class="error">No talks in <code>talks.json</code> yet.</p>';
+        return;
+      }
+      list.innerHTML = talks.map(t =>
+        '<li><a href="' + t.path + '">' +
+          '<div class="talk-name">' + t.name + '</div>' +
+          (t.description ? '<div class="talk-desc">' + t.description + '</div>' : '') +
+        '</a></li>'
+      ).join('');
+    })
+    .catch(() => {
+      document.getElementById('list').innerHTML =
+        '<p class="error">Could not load <code>talks.json</code><br>' +
+        'Serve this folder with a local server, e.g.<br>' +
+        '<code>python3 -m http.server</code></p>';
+    });
+</script>
+</body>
+</html>

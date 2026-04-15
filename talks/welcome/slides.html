@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f0f0f;
+      color: #f0f0f0;
+      font-family: 'Roboto', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+      cursor: default;
+    }
+
+    .slide {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6vw 10vw;
+    }
+
+    h1 {
+      font-size: 5vw;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 5vh;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      font-size: 3vw;
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 0.4em;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    li.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .counter {
+      position: fixed;
+      bottom: 2.5vh;
+      right: 3vw;
+      font-size: 1rem;
+      font-weight: 300;
+      opacity: 0.25;
+      letter-spacing: 0.05em;
+    }
+
+    .error {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      font-weight: 300;
+      color: #666;
+      font-size: 1.1rem;
+      text-align: center;
+      padding: 3rem;
+      line-height: 1.8;
+    }
+
+    .error code {
+      background: #1a1a1a;
+      padding: 0.4em 0.9em;
+      border-radius: 4px;
+      font-family: 'Roboto Mono', 'Courier New', monospace;
+      color: #999;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+  let slides = [];
+  let slideIdx = 0;
+  let bulletIdx = 0;
+
+  function parseMarkdown(md) {
+    return md
+      .split(/\n---\n/)
+      .map(block => block.trim())
+      .filter(Boolean)
+      .map(block => {
+        const lines = block.split('\n');
+        const titleLine = lines.find(l => l.startsWith('# '));
+        const title = titleLine ? titleLine.slice(2).trim() : 'Slide';
+        const bullets = lines
+          .filter(l => l.startsWith('- '))
+          .map(l => l.slice(2).trim());
+        return { title, bullets };
+      });
+  }
+
+  function render() {
+    const slide = slides[slideIdx];
+    document.title = slide.title;
+    document.getElementById('app').innerHTML =
+      '<div class="slide">' +
+        '<h1>' + slide.title + '</h1>' +
+        '<ul>' +
+          slide.bullets.map((b, i) =>
+            '<li class="' + (i < bulletIdx ? 'visible' : '') + '">' + b + '</li>'
+          ).join('') +
+        '</ul>' +
+      '</div>' +
+      '<div class="counter">' + (slideIdx + 1) + ' / ' + slides.length + '</div>';
+  }
+
+  function showError(html) {
+    document.getElementById('app').innerHTML = '<div class="error">' + html + '</div>';
+  }
+
+  function advance() {
+    const slide = slides[slideIdx];
+    if (bulletIdx < slide.bullets.length) {
+      bulletIdx++;
+    } else if (slideIdx < slides.length - 1) {
+      slideIdx++;
+      bulletIdx = 0;
+    }
+    render();
+  }
+
+  function retreat() {
+    if (bulletIdx > 0) {
+      bulletIdx--;
+    } else if (slideIdx > 0) {
+      slideIdx--;
+      bulletIdx = slides[slideIdx].bullets.length;
+    }
+    render();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      advance();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      retreat();
+    }
+  });
+
+  fetch('slides.md')
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(md => {
+      slides = parseMarkdown(md);
+      if (!slides.length) {
+        showError('<p>No slides found in <code>slides.md</code></p>');
+        return;
+      }
+      render();
+    })
+    .catch(() => {
+      showError(
+        '<p>Could not load <code>slides.md</code></p>' +
+        '<p>Serve this folder with a local server, e.g.</p>' +
+        '<code>python3 -m http.server</code>'
+      );
+    });
+</script>
+</body>
+</html>
