@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 900">
+  <rect width="400" height="900" fill="#161616"/>
+  <rect x="40" y="80" width="320" height="200" rx="6" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="1"/>
+  <rect x="40" y="320" width="320" height="200" rx="6" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="1"/>
+  <rect x="40" y="560" width="320" height="200" rx="6" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="200" y="195" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="14" font-weight="300" letter-spacing="3">WRITE</text>
+  <line x1="200" y1="285" x2="200" y2="315" stroke="#333" stroke-width="2"/>
+  <polygon points="193,312 200,328 207,312" fill="#333"/>
+  <text x="200" y="435" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="14" font-weight="300" letter-spacing="3">PRESENT</text>
+  <line x1="200" y1="525" x2="200" y2="555" stroke="#333" stroke-width="2"/>
+  <polygon points="193,552 200,568 207,552" fill="#333"/>
+  <text x="200" y="675" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="14" font-weight="300" letter-spacing="3">SHIP</text>
+</svg>

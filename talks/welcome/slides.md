@@ -6,14 +6,16 @@
 
 ---
 
-# Format
-- Slides are separated by ---
-- First # line is the slide heading
-- Bullets start with -
+# Bullet images
+- Text bullet before
+- ![Diagram](workflow.svg)
+- Text bullet after
 
 ---
+image_aside: portrait.svg
+---
 
-# Running locally
-- Needs a local web server to fetch slides.md
-- Run: python3 -m http.server
-- Then open http://localhost:8000/slides.html
+# Image aside
+- The image sits on the right
+- Its width follows its aspect ratio
+- Crop your image to control the split
