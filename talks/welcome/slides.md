@@ -1,4 +1,5 @@
 # Welcome
+![Workflow](workflow.svg)
 - Drop slides.html in any folder
 - Add a slides.md alongside it
 - Space or arrow keys to advance

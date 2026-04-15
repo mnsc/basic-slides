@@ -41,6 +41,13 @@
       list-style: none;
     }
 
+    .slide img {
+      max-height: 45vh;
+      max-width: 100%;
+      object-fit: contain;
+      margin-bottom: 4vh;
+    }
+
     li {
       font-size: 3vw;
       font-weight: 300;
@@ -113,7 +120,13 @@
         const bullets = lines
           .filter(l => l.startsWith('- '))
           .map(l => l.slice(2).trim());
-        return { title, bullets };
+        const images = lines
+          .filter(l => /^!\[.*\]\(.+\)/.test(l))
+          .map(l => {
+            const m = l.match(/^!\[(.*?)\]\((.+?)\)/);
+            return { alt: m[1], src: m[2] };
+          });
+        return { title, bullets, images };
       });
   }
 
@@ -123,6 +136,7 @@
     document.getElementById('app').innerHTML =
       '<div class="slide">' +
         '<h1>' + slide.title + '</h1>' +
+        slide.images.map(img => '<img src="' + img.src + '" alt="' + img.alt + '">').join('') +
         '<ul>' +
           slide.bullets.map((b, i) =>
             '<li class="' + (i < bulletIdx ? 'visible' : '') + '">' + b + '</li>'
