@@ -65,11 +65,12 @@
       padding: 6vw 4vw 6vw 10vw;
     }
 
-    .aside-img {
-      height: 100vh;
-      width: auto;
-      display: block;
+    .aside-bg {
       flex-shrink: 0;
+      width: 40%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
 
     /* Bullet image */
@@ -154,7 +155,6 @@
       const hasHeading = lines.some(l => l.startsWith('# '));
 
       if (!hasHeading) {
-        // Frontmatter block — collect key: value pairs for the next slide
         for (const line of lines) {
           const m = line.match(/^([\w_]+)\s*:\s*(.+)$/);
           if (m) frontmatter[m[1]] = m[2].trim();
@@ -216,7 +216,7 @@
             standaloneImgs +
             '<ul>' + bulletsHtml + '</ul>' +
           '</div>' +
-          '<img class="aside-img" src="' + slide.imageAside + '" alt="">' +
+          '<div class="aside-bg" style="background-image:url(\'' + slide.imageAside + '\')" ></div>' +
         '</div>' + counter;
     } else {
       document.getElementById('app').innerHTML =
