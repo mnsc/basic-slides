@@ -6,30 +6,27 @@
   <title>Slides</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Roboto', sans-serif;
       background: #0f0f0f;
       color: #f0f0f0;
+      font-family: 'Roboto', sans-serif;
       height: 100vh;
       overflow: hidden;
-      cursor: none;
+      user-select: none;
+      cursor: default;
     }
 
-    #slide {
+    .slide {
       position: fixed;
       inset: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 8vh 12vw;
+      padding: 6vw 10vw;
     }
 
     h1 {
@@ -37,20 +34,7 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       line-height: 1.1;
-      margin-bottom: 0.6em;
-      flex-shrink: 0;
-    }
-
-    .content {
-      display: flex;
-      align-items: center;
-    }
-
-    .content.has-image {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2em;
-      align-items: center;
+      margin-bottom: 5vh;
     }
 
     ul {
@@ -61,9 +45,10 @@
       font-size: 3vw;
       font-weight: 300;
       line-height: 1.6;
+      margin-bottom: 0.4em;
       opacity: 0;
       transform: translateY(10px);
-      transition: opacity 200ms ease, transform 200ms ease;
+      transition: opacity 0.15s ease, transform 0.15s ease;
     }
 
     li.visible {
@@ -71,178 +56,137 @@
       transform: translateY(0);
     }
 
-    .image-cell {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .image-cell img {
-      max-width: calc(100% - 2em);
-      max-height: 65vh;
-      object-fit: contain;
-      display: block;
-    }
-
-    #counter {
+    .counter {
       position: fixed;
-      bottom: 1.5em;
-      right: 2em;
+      bottom: 2.5vh;
+      right: 3vw;
       font-size: 1rem;
       font-weight: 300;
-      opacity: 0.35;
+      opacity: 0.25;
       letter-spacing: 0.05em;
     }
 
-    #error {
+    .error {
       position: fixed;
       inset: 0;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      gap: 1.2em;
-    }
-
-    #error p {
+      gap: 1.5rem;
       font-weight: 300;
-      font-size: 1.5rem;
-      color: #888;
-    }
-
-    #error code {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      padding: 0.6em 1.2em;
-      border-radius: 6px;
+      color: #666;
       font-size: 1.1rem;
-      color: #aaa;
+      text-align: center;
+      padding: 3rem;
+      line-height: 1.8;
     }
 
-    #error small {
-      color: #444;
-      font-size: 0.85rem;
-      font-weight: 300;
+    .error code {
+      background: #1a1a1a;
+      padding: 0.4em 0.9em;
+      border-radius: 4px;
+      font-family: 'Roboto Mono', 'Courier New', monospace;
+      color: #999;
+      font-size: 0.95rem;
     }
   </style>
 </head>
 <body>
-  <div id="slide"></div>
-  <div id="counter"></div>
 
-  <script>
-    const slideEl  = document.getElementById('slide');
-    const counterEl = document.getElementById('counter');
+<div id="app"></div>
 
-    let slides     = [];
-    let slideIndex = 0;
-    let bulletIndex = 0;
+<script>
+  let slides = [];
+  let slideIdx = 0;
+  let bulletIdx = 0;
 
-    function escapeHtml(str) {
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function parseMarkdown(text) {
-      const blocks = text.trim().replace(/\r\n/g, '\n').split(/\n---\n/);
-      return blocks.map(block => {
-        const lines   = block.trim().split('\n');
-        let title     = '';
-        const bullets = [];
-        let image     = null;
-
-        for (const line of lines) {
-          const t = line.trim();
-          if (!title && t.startsWith('# ')) {
-            title = t.slice(2).trim();
-          } else if (t.startsWith('- ')) {
-            bullets.push(t.slice(2).trim());
-          } else {
-            const m = t.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-            if (m) image = { alt: m[1], src: m[2] };
-          }
-        }
-
-        return { title, bullets, image };
-      }).filter(s => s.title || s.bullets.length);
-    }
-
-    function render() {
-      const slide = slides[slideIndex];
-      document.title  = slide.title || 'Slides';
-      counterEl.textContent = `${slideIndex + 1} / ${slides.length}`;
-
-      slideEl.innerHTML = `
-        <h1>${escapeHtml(slide.title)}</h1>
-        <div class="content${slide.image ? ' has-image' : ''}">
-          <ul>
-            ${slide.bullets.map((b, i) =>
-              `<li class="${i < bulletIndex ? 'visible' : ''}">${escapeHtml(b)}</li>`
-            ).join('\n            ')}
-          </ul>
-          ${slide.image ? `
-          <div class="image-cell">
-            <img src="${escapeHtml(slide.image.src)}" alt="${escapeHtml(slide.image.alt)}">
-          </div>` : ''}
-        </div>`;
-    }
-
-    function advance() {
-      const slide = slides[slideIndex];
-      if (bulletIndex < slide.bullets.length) {
-        bulletIndex++;
-        const li = slideEl.querySelectorAll('li')[bulletIndex - 1];
-        if (li) li.classList.add('visible');
-      } else if (slideIndex < slides.length - 1) {
-        slideIndex++;
-        bulletIndex = 0;
-        render();
-      }
-    }
-
-    function retreat() {
-      if (bulletIndex > 0) {
-        bulletIndex--;
-        const li = slideEl.querySelectorAll('li')[bulletIndex];
-        if (li) li.classList.remove('visible');
-      } else if (slideIndex > 0) {
-        slideIndex--;
-        bulletIndex = slides[slideIndex].bullets.length;
-        render();
-      }
-    }
-
-    document.addEventListener('keydown', e => {
-      if (['Space', 'ArrowRight', 'ArrowDown'].includes(e.code)) {
-        e.preventDefault();
-        advance();
-      } else if (['ArrowLeft', 'ArrowUp'].includes(e.code)) {
-        e.preventDefault();
-        retreat();
-      }
-    });
-
-    fetch('slides.md')
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.text();
-      })
-      .then(text => {
-        slides = parseMarkdown(text);
-        if (!slides.length) throw new Error('No slides found in slides.md');
-        render();
-      })
-      .catch(err => {
-        document.body.innerHTML = `
-          <div id="error">
-            <p>Could not load <strong>slides.md</strong></p>
-            <code>python3 -m http.server 8080</code>
-            <small>${escapeHtml(err.message)}</small>
-          </div>`;
+  function parseMarkdown(md) {
+    return md
+      .split(/\n---\n/)
+      .map(block => block.trim())
+      .filter(Boolean)
+      .map(block => {
+        const lines = block.split('\n');
+        const titleLine = lines.find(l => l.startsWith('# '));
+        const title = titleLine ? titleLine.slice(2).trim() : 'Slide';
+        const bullets = lines
+          .filter(l => l.startsWith('- '))
+          .map(l => l.slice(2).trim());
+        return { title, bullets };
       });
-  </script>
+  }
+
+  function render() {
+    const slide = slides[slideIdx];
+    document.title = slide.title;
+    document.getElementById('app').innerHTML =
+      '<div class="slide">' +
+        '<h1>' + slide.title + '</h1>' +
+        '<ul>' +
+          slide.bullets.map((b, i) =>
+            '<li class="' + (i < bulletIdx ? 'visible' : '') + '">' + b + '</li>'
+          ).join('') +
+        '</ul>' +
+      '</div>' +
+      '<div class="counter">' + (slideIdx + 1) + ' / ' + slides.length + '</div>';
+  }
+
+  function showError(html) {
+    document.getElementById('app').innerHTML = '<div class="error">' + html + '</div>';
+  }
+
+  function advance() {
+    const slide = slides[slideIdx];
+    if (bulletIdx < slide.bullets.length) {
+      bulletIdx++;
+    } else if (slideIdx < slides.length - 1) {
+      slideIdx++;
+      bulletIdx = 0;
+    }
+    render();
+  }
+
+  function retreat() {
+    if (bulletIdx > 0) {
+      bulletIdx--;
+    } else if (slideIdx > 0) {
+      slideIdx--;
+      bulletIdx = slides[slideIdx].bullets.length;
+    }
+    render();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      advance();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      retreat();
+    }
+  });
+
+  fetch('slides.md')
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(md => {
+      slides = parseMarkdown(md);
+      if (!slides.length) {
+        showError('<p>No slides found in <code>slides.md</code></p>');
+        return;
+      }
+      render();
+    })
+    .catch(() => {
+      showError(
+        '<p>Could not load <code>slides.md</code></p>' +
+        '<p>Serve this folder with a local server, e.g.</p>' +
+        '<code>python3 -m http.server</code>'
+      );
+    });
+</script>
 </body>
 </html>

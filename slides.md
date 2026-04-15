@@ -1,20 +1,18 @@
-# Welcome to Basic Slides
-- Press Space or → to advance
-- Press ← to go back
-- Each bullet appears one at a time
+# Welcome
+- Drop slides.html in any folder
+- Add a slides.md alongside it
+- Space or arrow keys to advance
 
 ---
 
-# Minimal by Design
-- One heading per slide
-- As many bullet points as you like
-- Separate slides with ---
+# Format
+- Slides are separated by ---
+- First # line is the slide heading
+- Bullets start with -
 
 ---
 
-# Images Split the Slide
-- Use standard markdown image syntax
-- The image appears on the right
-- Bullets stay on the left
-
-![A nice photo](./photo.jpg)
+# Running locally
+- Needs a local web server to fetch slides.md
+- Run: python3 -m http.server
+- Then open http://localhost:8000/slides.html
