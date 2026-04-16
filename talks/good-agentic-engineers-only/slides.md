@@ -36,6 +36,7 @@ image_aside: slopman.jpg
 - Copilot CLI! (för vi har licens)
 - Greenfield cool shit
 - Brownfield bad crap<br><small>https://github.com/JosePaumard/2026_Jfokus-Loom-lab</small>
+- Plan mode!
 - Egen taktil erfarenhet!
 
 ---
