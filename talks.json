@@ -1,3 +1,4 @@
 [
-  { "name": "Welcome", "path": "talks/welcome/slides.html", "description": "Getting started with basic-slides" }
+  { "name": "Welcome", "path": "talks/welcome/slides.html", "description": "Getting started with basic-slides" },
+  { "name": "Good Agentic Engineers Only", "path": "talks/good-agentic-engineers-only/slides.html", "description": "Kompetensdag OP" }
 ]

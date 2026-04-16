@@ -27,10 +27,11 @@
       flex-direction: column;
       justify-content: center;
       padding: 6vw 10vw;
+      overflow: hidden;
     }
 
     h1 {
-      font-size: 5vw;
+      font-size: clamp(1.5rem, 5vw, 6rem);
       font-weight: 700;
       letter-spacing: -0.02em;
       line-height: 1.1;
@@ -51,26 +52,15 @@
 
     /* Image aside layout */
     .slide.has-aside {
-      flex-direction: row;
-      padding: 0;
-      align-items: stretch;
+      background-size: auto 100%;
+      background-position: right center;
+      background-repeat: no-repeat;
     }
 
     .slide.has-aside .content {
-      flex: 1;
-      min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 6vw 4vw 6vw 10vw;
-    }
-
-    .aside-bg {
-      flex-shrink: 0;
-      width: 40%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
     }
 
     /* Bullet image */
@@ -86,7 +76,7 @@
     }
 
     li {
-      font-size: 3vw;
+      font-size: clamp(1rem, 3vw, 3.5rem);
       font-weight: 300;
       line-height: 1.6;
       margin-bottom: 0.4em;
@@ -103,7 +93,7 @@
     .counter {
       position: fixed;
       bottom: 2.5vh;
-      right: 3vw;
+      left: 3vw;
       font-size: 1rem;
       font-weight: 300;
       opacity: 0.25;
@@ -210,13 +200,12 @@
 
     if (slide.imageAside) {
       document.getElementById('app').innerHTML =
-        '<div class="slide has-aside">' +
+        '<div class="slide has-aside" style="background-image:url(\'' + slide.imageAside + '\')">' +
           '<div class="content">' +
             '<h1>' + slide.title + '</h1>' +
             standaloneImgs +
             '<ul>' + bulletsHtml + '</ul>' +
           '</div>' +
-          '<div class="aside-bg" style="background-image:url(\'' + slide.imageAside + '\')" ></div>' +
         '</div>' + counter;
     } else {
       document.getElementById('app').innerHTML =
@@ -263,7 +252,7 @@
     }
   });
 
-  fetch('slides.md')
+  fetch('slides.md?v=' + Date.now())
     .then(r => {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.text();

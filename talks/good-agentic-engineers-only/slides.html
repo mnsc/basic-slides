@@ -137,6 +137,8 @@
 
   function parseMarkdown(md) {
     const rawBlocks = md.split(/\n---\n/).map(b => b.trim()).filter(Boolean);
+    console.log('[parse] raw blocks count:', rawBlocks.length);
+    rawBlocks.forEach((b, i) => console.log('[parse] block', i, JSON.stringify(b.slice(0, 80))));
     const result = [];
     let frontmatter = {};
 
@@ -145,9 +147,13 @@
       const hasHeading = lines.some(l => l.startsWith('# '));
 
       if (!hasHeading) {
+        console.log('[parse] frontmatter block:', block);
         for (const line of lines) {
           const m = line.match(/^([\w_]+)\s*:\s*(.+)$/);
-          if (m) frontmatter[m[1]] = m[2].trim();
+          if (m) {
+            frontmatter[m[1]] = m[2].trim();
+            console.log('[parse] frontmatter key:', m[1], '=', m[2].trim());
+          }
         }
         continue;
       }
@@ -173,15 +179,19 @@
         }
       }
 
-      result.push({ title, bullets, images, imageAside: frontmatter.image_aside || null });
+      const slideObj = { title, bullets, images, imageAside: frontmatter.image_aside || null };
+      console.log('[parse] slide:', title, '| imageAside:', slideObj.imageAside, '| frontmatter was:', JSON.stringify(frontmatter));
+      result.push(slideObj);
       frontmatter = {};
     }
 
+    console.log('[parse] total slides:', result.length);
     return result;
   }
 
   function render() {
     const slide = slides[slideIdx];
+    console.log('[render] slideIdx:', slideIdx, '| title:', slide.title, '| imageAside:', slide.imageAside);
     document.title = slide.title;
 
     const bulletsHtml = slide.bullets.map((b, i) => {
